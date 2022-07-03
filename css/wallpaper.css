@@ -102,6 +102,7 @@ body {
     cursor: pointer;
     font-size: 15px;
     list-style-type:none;
+    font-weight: 700;
 }
 
 #banner li:hover,#banner li:hover a{
