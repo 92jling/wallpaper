@@ -6,7 +6,7 @@
  ********************************/
 
 var seting = {
-    apiUrl: "/api/index.js",  // [!! MODIFIED !!] API地址，确保和你的 PHP 文件名一致
+    apiUrl: "/api/",  // [!! MODIFIED !!] API地址，确保和你的 PHP 文件名一致
     ratio: 0.618,       // 图片宽高比
     types: '360new',    // 加载壁纸的种类
     downApi: 'https://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=' // 用于下载图片的api地址
