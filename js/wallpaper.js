@@ -6,10 +6,11 @@
  ********************************/
 
 var seting = {
-    apiUrl: "/api/",  // [!! MODIFIED !!] API地址，确保和你的 PHP 文件名一致
+    apiUrl: "/api/",    // Vercel API 路径
     ratio: 0.618,       // 图片宽高比
     types: '360new',    // 加载壁纸的种类
-    downApi: 'https://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=' // 用于下载图片的api地址
+    // [!! MODIFIED !!] 1. 更换为 i3.wp.com 代理
+    downApi: 'https://i3.wp.com/' // 新的下载代理
 };
 
 var jigsaw = {
@@ -30,15 +31,6 @@ window.onload = function () {
     loadData(seting.types, true);    // 初始加载壁纸
     resizeHeight();
 };
-
-// // ajax加载时模糊化
-// $(document).ajaxStart(function () {
-//     $('html').addClass("blur"); 
-// });
-
-// $(document).ajaxStop(function () {
-//     $("html").removeClass("blur");
-// });
 
 $(function () {
     
@@ -71,9 +63,6 @@ $(function () {
     
     // 点击小图显示大图
     $("#walBox").on("click","img", function() {
-        // var imgWidth = parseInt(screen.width / 2),
-        // imgHeight = parseInt(imgWidth * seting.ratio);
-        // showImg(decode360Url($(this).data('realurl'), imgWidth, imgHeight, 100));
         showImg($(this).data('realurl'));
     });
 });
@@ -126,12 +115,12 @@ function loadData(types, newload) {
 
 resizeHeight();
 
-// 重新调整高度 TODO: 完全可以纯 css 实现……
+// 重新调整高度
 function resizeHeight() {
     switch (seting.types)
     {
         default:
-            var newHeight = $("#walBox").width() * (seting.ratio / 2);    // parseInt($(".jigsaw .half").css('width'))
+            var newHeight = $("#walBox").width() * (seting.ratio / 2);
             $(".jigsaw .item").css('height', newHeight);
             $(".jigsaw .Hhalf").css('height', newHeight/2);
     }
@@ -144,42 +133,42 @@ function addJigsaw(img, alt) {
     var imgWidth,imgHeight;
     jigsaw.count++;    // 已加载壁纸数自加
     
-    if(jigsaw.halfHtml !== '')     //  1/4 的壁纸，已加载完上面一半，接着加载下面那半
+    if(jigsaw.halfHtml !== '')     //  1/4 的壁纸
     {
         imgWidth = parseInt(screen.width / 4);
         imgHeight = parseInt(imgWidth * seting.ratio);
             
-        // [!! MODIFIED !!] 替换了 data-original 的 URL，使用 createProxyUrl()
+        // (图片显示 - 保持不变)
         newHtml = '    <div class="Hhalf oneImg" onmouseover="hoverJigsaw(this)">'
                 + '        <img data-original="' + createProxyUrl(decode360Url(img, imgWidth, imgHeight, 0)) + '" alt="' + alt + '" title="关键字：' + alt + '" data-realurl="' + img + '">'
                 + '    </div>'
                 + '</div>';
-        contAdd(jigsaw.halfHtml + newHtml);    //往容器中加入内容
-        jigsaw.halfHtml = '';    // 另外半边加载完成
-        return true;    // 函数功能已完成
+        contAdd(jigsaw.halfHtml + newHtml);
+        jigsaw.halfHtml = '';
+        return true;
     }
     
-    if(((jigsaw.count-1) % 5) === 0){jigsaw.loadBig = false;}    // 新的一行，状态重置
+    if(((jigsaw.count-1) % 5) === 0){jigsaw.loadBig = false;}
     
     if((jigsaw.loadBig === false) && ( (Math.floor(Math.random()*3) === 0) || ((jigsaw.count % 5) === 0) ))     // 随机加载大张壁纸
     {
         imgWidth = parseInt(screen.width / 2);
         imgHeight = parseInt(imgWidth * seting.ratio);
             
-        // [!! MODIFIED !!] 替换了 data-original 的 URL，使用 createProxyUrl()
+        // (图片显示 - 保持不变)
         newHtml = '<div class="item half oneImg" onmouseover="hoverJigsaw(this)">'
                 + '    <img data-original="' + createProxyUrl(decode360Url(img, imgWidth, imgHeight, 0)) + '" alt="' + alt + '" title="关键字：' + alt + '" data-realurl="' + img + '">'
                 + '</div>';
-        contAdd(newHtml);    //往容器中加入内容
-        jigsaw.loadBig = true;    // 大张壁纸已被加载
-        return true;    // 函数功能已完成
+        contAdd(newHtml);
+        jigsaw.loadBig = true;
+        return true;
     }
     
     // 加载半张的壁纸
     imgWidth = parseInt(screen.width / 4);
     imgHeight = parseInt(imgWidth * seting.ratio);
         
-    // [!! MODIFIED !!] 替换了 data-original 的 URL，使用 createProxyUrl()
+    // (图片显示 - 保持不变)
     jigsaw.halfHtml = '<div class="item quater">'
             + '    <div class="Hhalf oneImg" onmouseover="hoverJigsaw(this)">'
             + '        <img data-original="' + createProxyUrl(decode360Url(img, imgWidth, imgHeight, 0)) + '" alt="' + alt + '" title="关键字：' + alt + '" data-realurl="' + img + '">'
@@ -190,12 +179,12 @@ function addJigsaw(img, alt) {
 // 往壁纸容器中加入内容
 function contAdd(html)   
 {
-    var myBox = $("#walBox");    // 装壁纸的容器
+    var myBox = $("#walBox");
     var $newHtml = $(html);
-    myBox.append($newHtml);    // 加载到容器中
+    myBox.append($newHtml);
     $("img", $newHtml).lazyload({
         effect:'fadeIn',
-        threshold: 200 // 提前开始加载
+        threshold: 200
     });
 }
 
@@ -208,25 +197,16 @@ function ajaxBingWal(start, count){
         dataType : "json",
         success: function(jsonData){
             var newHtml = '<link rel="stylesheet" href="css/onepage-scroll.css">',downUrl = '';
-            $("#walBox").append(newHtml);    // 全屏滚动插件css
+            $("#walBox").append(newHtml);
             
             for (var i = 0; i < jsonData.images.length; i++){
-                // if(jsonData.images[i].wp === true){ // BING官方不让下载的图片处理
-                //     downUrl = 'https://cn.bing.com/hpwp/' + jsonData.images[i].hsh;
-                // }else{
-                //     downUrl = 'https://cn.bing.com' + jsonData.images[i].url;
-                // }
                 downUrl = 'https://cn.bing.com' + jsonData.images[i].url;
                 newHtml += '<section data-url="' + downUrl + '" data-img="https://cn.bing.com' + jsonData.images[i].url + '"><p class="note">' + jsonData.images[i].copyright + '</p></section>';
             }
             $("#walBox").append(newHtml);
             
             $('#walBox').onepage_scroll({
-                // sectionContainer: '#walBox',
-                // direction: 'horizontal',  // 水平滚动
-                // pagination: false,  // 不显示右侧圆点
-                // easing: 'ease-in',
-                loop: false,    // 禁止循环滚动
+                loop: false,
                 beforeMove: function(index){
                     $("#toolBall").attr('href', $(".section").eq(index-1).attr('data-url'));
                     $(".section").eq(index-1).attr('style','background-image: url('+ $(".section").eq(index-1).attr('data-img') +')');
@@ -234,7 +214,6 @@ function ajaxBingWal(start, count){
                 afterMove: function(index){
                     $(".section").eq(index).attr('style','background-image: url('+ $(".section").eq(index).attr('data-img') +')');
                     $(".section").eq(index-2).attr('style','background-image: url('+ $(".section").eq(index-2).attr('data-img') +')');
-                    // $(".section").eq(index-1).attr('style','background-image: url('+ $(".section").eq(index-1).attr('data-img') +')');
                 }
             });
             $("#toolBall").attr('href', $(".section").eq(0).attr('data-url'));
@@ -250,17 +229,17 @@ function ajaxCiba(data) {
     $.ajax({
         type: "GET", 
         url: "https://open.iciba.com/dsapi/", 
-        // data: "cid=bing&start=" + start + "&count=" + count,
         dataType : "jsonp",
         success: function(jsonData){
             var newHtml = '<style>#walBox .note{position: fixed;}body{background-image: url(' + jsonData.picture2 + ');overflow: hidden;}</style>' +
-            '<p class="note" title="' + jsonData.translation + '"><span onclick="$(\'audio\')[0].play();" title="点击朗读" class="ciba-eng">' + jsonData.content + '</span><br>' + jsonData.note + //❤
+            '<p class="note" title="' + jsonData.translation + '"><span onclick="$(\'audio\')[0].play();" title="点击朗读" class="ciba-eng">' + jsonData.content + '</span><br>' + jsonData.note +
             ' <span title="' + jsonData.love + '人喜欢" class="ciba-love" onclick="$(\'.love-count\').html(parseInt($(\'.love-count\').html()) + 1)"><span style="color: red;">❤</span>+<span class="love-count">' + jsonData.love + '</span></span></p>' + 
             '<audio src="' + jsonData.tts + '" hidden></audio>';
             
             $("#walBox").append(newHtml);
             
-            $("#toolBall").attr('href', seting.downApi + jsonData.picture2);    // 下载链接
+            // [!! MODIFIED !!] 2. 使用新的下载代理
+            $("#toolBall").attr('href', createDownloadUrl(jsonData.picture2));    // 下载链接
             
         }
     });
@@ -330,13 +309,14 @@ function hoverJigsaw(obj) {
     
     var realUrl = $(obj).find('img').attr("data-realurl");
     var downBox = '';
-    // [!! MODIFIED !!] 替换了 <a> 标签的 href，使其指向我们的代理，并添加了 'download' 属性
+    
+    // [!! MODIFIED !!] 3. 使用新的下载代理
     downBox = '<ul class="down" title="下载壁纸">'
-    + '<li><a href="' + createProxyUrl(decode360Url(realUrl, 2560, 1600, 100)) + '" download="wallpaper-2560x1600.jpg" target="_blank">2560x1600</a></li>'
-    + '<li><a href="' + createProxyUrl(decode360Url(realUrl, 1440, 900, 100)) + '" download="wallpaper-1440x900.jpg" target="_blank">1440x900</a></li>'
-    + '<li><a href="' + createProxyUrl(decode360Url(realUrl, 1024, 768, 100)) + '" download="wallpaper-1024x768.jpg" target="_blank">1024x768</a></li>'
-    + '<li><a href="' + createProxyUrl(decode360Url(realUrl, 800, 600, 100)) + '" download="wallpaper-800x600.jpg" target="_blank">800x600</a></li>'
-    + '<li><a href="' + createProxyUrl(decode360Url(realUrl, 0, 0, 100)) + '" download="wallpaper-original.jpg" target="_blank" title="下载原始尺寸图片">原始尺寸</a></li></ul>'
+    + '<li><a href="' + createDownloadUrl(decode360Url(realUrl, 2560, 1600, 100))+ '" download="wallpaper-2560x1600.jpg" target="_blank">2560x1600</a></li>'
+    + '<li><a href="' + createDownloadUrl(decode360Url(realUrl, 1440, 900, 100))+ '" download="wallpaper-1440x900.jpg" target="_blank">1440x900</a></li>'
+    + '<li><a href="' + createDownloadUrl(decode360Url(realUrl, 1024, 768, 100))+ '" download="wallpaper-1024x768.jpg" target="_blank">1024x768</a></li>'
+    + '<li><a href="' + createDownloadUrl(decode360Url(realUrl, 800, 600, 100))+ '" download="wallpaper-800x600.jpg" target="_blank">800x600</a></li>'
+    + '<li><a href="' + createDownloadUrl(decode360Url(realUrl, 0, 0, 100))+ '" download="wallpaper-original.jpg" target="_blank" title="下载原始尺寸图片">原始尺寸</a></li></ul>'
     $(obj).append(downBox);
 }
 
@@ -345,29 +325,36 @@ function changeTitle(obj) {
     $('title').html($(obj).html()+' - 在线壁纸');
 }
 
-// [!! NEW FUNCTION !!]
-/**
- * 创建图片代理 URL
- * @param {string} originalUrl - 原始图片 URL
- * @returns {string} - 代理后的 URL
- */
+// (图片显示代理 - 保持不变)
 function createProxyUrl(originalUrl) {
     if (!originalUrl) {
-        return ""; // 如果 URL 为空，返回空字符串
+        return "";
     }
-    // 确保 API.php 路径正确，这里假设它在网站根目录
     return seting.apiUrl + '?img_url=' + encodeURIComponent(originalUrl); 
+}
+
+// [!! NEW FUNCTION !!]
+/**
+ * 创建 i3.wp.com 下载代理 URL
+ * @param {string} originalUrl - 原始图片 URL (e.g., https://example.com/img.jpg)
+ * @returns {string} - i3.wp.com 代理后的 URL (e.g., https://i3.wp.com/example.com/img.jpg)
+ */
+function createDownloadUrl(originalUrl) {
+    if (!originalUrl) {
+        return "";
+    }
+    // 移除 "https://" 或 "http://"
+    var cleanUrl = originalUrl.replace(/^https?:\/\//, '');
+    return seting.downApi + cleanUrl;
 }
 
 var imgDom;
 
 // 全屏展示图片
-// 参数：图片链接
 function showImg(img) {
-    // [!! MODIFIED !!] 替换了 src，使用 createProxyUrl() 来加载全屏图片
+    // (图片显示代理 - 保持不变)
     imgDom = $('<img>').attr('id', 'full-img').attr('src', createProxyUrl(img)).appendTo('body');
 }
 
-// 我的要求并不高，保留这一句版权信息可好？
-// 保留了，你不会损失什么；而保留版权，是对作者最大的尊重。
+// 版权信息
 console.info('作者：mengkun(https://mkblog.cn)\n壁纸来源于：360壁纸库、必应首页壁纸以及金山词霸开放平台\nGithub：https://github.com/mengkunsoft/wallpaper');
