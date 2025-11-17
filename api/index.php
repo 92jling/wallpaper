@@ -1,4 +1,12 @@
 <?php
+/**
+ * ===================================================================
+ * 关键配置：请将这里替换为你的新 API 的根 URL
+ * 例如：$NEW_API_BASE_URL = "http://api.360.com";
+ * ===================================================================
+ */
+$NEW_API_BASE_URL = "https://img.mcptool.me"; // !! 必须修改这里
+
 //tags http://cdn.apc.360.cn/index.php?c=WallPaper&a=getAllCategoriesV2&from=360chrome
 //new http://wallpaper.apc.360.cn/index.php?c=WallPaper&a=getAppsByOrder&order=create_time&start=【0开始】&count=【加载数】&from=360chrome
 //专区 http://wallpaper.apc.360.cn/index.php?c=WallPaper&a=getAppsByCategory&cid=【分类ID】&start=【0开始】&count=【加载数】&from=360chrome
@@ -7,26 +15,29 @@ $cid = getParam('cid', '360new');
 
 switch($cid)
 {
-    case '360new':  // 360壁纸 新图片
+    case '360new':  // 获取最新壁纸 (对应新 API: /api/latest)
         $start = getParam('start', 0);
-        $count = getParam('count', 10);
-        echojson(file_get_contents("http://wp.birdpaper.com.cn/index.php?c=WallPaper&a=getAppsByOrder&order=create_time&start={$start}&count={$count}&from=360chrome"));
+        $count = getParam('count', 10); // 你的旧代码默认是10，新API文档默认是20，这里保持你旧的逻辑
+        // 新 URL: /api/latest?start=...&count=...
+        echojson(file_get_contents("{$NEW_API_BASE_URL}/api/latest?start={$start}&count={$count}"));
     break;
     
-    case '360tags':
-        echojson(file_get_contents("http://wp.birdpaper.com.cn/index.php?c=WallPaper&a=getAllCategoriesV2&from=360chrome"));
+    case '360tags': // 获取所有壁纸分类 (对应新 API: /api/categories)
+        // 新 URL: /api/categories
+        echojson(file_get_contents("{$NEW_API_BASE_URL}/api/categories"));
     break;
     
-    case 'bing':
+    case 'bing': // Bing 壁纸 (此功能在新API中未提及，保持原样)
         $start = getParam('start', -1);
         $count = getParam('count', 8);
         echojson(file_get_contents("http://cn.bing.com/HPImageArchive.aspx?format=js&idx={$start}&n={$count}"));
     break;
     
-    default:
+    default: // 获取指定分类的壁纸列表 (对应新 API: /api/wallpapers)
         $start = getParam('start', 0);
-        $count = getParam('count', 10);
-        echojson(file_get_contents("http://wp.birdpaper.com.cn/index.php?c=WallPaper&a=getAppsByCategory&cid={$cid}&start={$start}&count={$count}&from=360chrome"));
+        $count = getParam('count', 10); // 你的旧代码默认是10，新API文档默认是20，这里保持你旧的逻辑
+        // 新 URL: /api/wallpapers?cid=...&start=...&count=...
+        echojson(file_get_contents("{$NEW_API_BASE_URL}/api/wallpapers?cid={$cid}&start={$start}&count={$count}"));
         
 }
 
