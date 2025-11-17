@@ -10,11 +10,11 @@ switch($cid)
     case '360new':  // 360壁纸 新图片
         $start = getParam('start', 0);
         $count = getParam('count', 10);
-        echojson(file_get_contents("http://wallpaper.apc.360.cn/index.php?c=WallPaper&a=getAppsByOrder&order=create_time&start={$start}&count={$count}&from=360chrome"));
+        echojson(file_get_contents("https://mini.browser.360.cn/index.php?c=WallPaper&a=getAppsByOrder&order=create_time&start={$start}&count={$count}&from=360chrome"));
     break;
     
     case '360tags':
-        echojson(file_get_contents("http://wallpaper.apc.360.cn/index.php?c=WallPaper&a=getAllCategoriesV2&from=360chrome"));
+        echojson(file_get_contents("https://mini.browser.360.cn/index.php?c=WallPaper&a=getAllCategoriesV2&from=360chrome"));
     break;
     
     case 'bing':
@@ -26,7 +26,7 @@ switch($cid)
     default:
         $start = getParam('start', 0);
         $count = getParam('count', 10);
-        echojson(file_get_contents("http://wallpaper.apc.360.cn/index.php?c=WallPaper&a=getAppsByCategory&cid={$cid}&start={$start}&count={$count}&from=360chrome"));
+        echojson(file_get_contents("https://mini.browser.360.cn/index.php?c=WallPaper&a=getAppsByCategory&cid={$cid}&start={$start}&count={$count}&from=360chrome"));
         
 }
 
