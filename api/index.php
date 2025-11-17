@@ -1,4 +1,15 @@
 <?php
+// ===== 临时调试代码 START =====
+if (isset($_GET['test'])) {
+    header('Content-Type: application/json');
+    die(json_encode(['status' => 'ok', 'message' => 'PHP 脚本正在工作']));
+}
+// ===== 临时调试代码 END =====
+
+// 允许的图片来源域名 (从你的JS源码中获取)
+define('ALLOWED_HOSTS', ['qhimg.com', '360img.cn', '360cdn.com']);
+
+// ... (文件的其余部分保持不变) ...
 
 // 允许的图片来源域名 (从你的JS源码中获取)
 define('ALLOWED_HOSTS', ['qhimg.com', '360img.cn', '360cdn.com']);
